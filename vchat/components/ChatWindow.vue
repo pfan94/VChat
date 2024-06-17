@@ -1,7 +1,7 @@
 <template>
   <v-main
-    id="scrollContainer"
-    ref="scrollContainer"
+    id="messagesContainer"
+    ref="messagesContainer"
     v-scroll.self="onScroll"
     style="overflow-y: auto; height: 100vh"
     class="hide-scrollbar"
@@ -48,16 +48,15 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-fab
-        :active="scroll_buttom"
-        icon="mdi-arrow-down-bold"
-        location="top end"
-        app
-        offset
-        @click="scrollBottom"
-        :style="{ left: '50%', transform: 'translateX(-50%)' }"
-      />
     </v-container>
+    <v-fab
+      class="mb-12"
+      :active="scroll_buttom"
+      icon="mdi-arrow-down-bold"
+      location="bottom end"
+      app
+      @click="scrollBottom"
+    />
   </v-main>
 </template>
 
@@ -100,6 +99,10 @@ export default {
     }
   },
 
+  mounted() {
+    this.scrollBottom();
+  },
+
   methods: {
     actionMenu($event) {
       this.action_menu_state = true;
@@ -113,7 +116,7 @@ export default {
       const scrollHeight = $event.target.scrollHeight;
       const clientHeight = $event.target.clientHeight;
       if (scrollTop === 0) {
-        this.$emit("scrollTop");
+        this.$emit("load:messages");
       } else if (scrollHeight - scrollTop > clientHeight) {
         this.scroll_buttom = true;
       } else {
@@ -121,8 +124,16 @@ export default {
       }
     },
     scrollBottom() {
-      // TODO
-      this.$refs.scrollContainer.$el.scrollIntoView(true);
+      if (!this.$refs.messagesContainer) {
+        return;
+      }
+
+      const scrollHeight = this.$refs.messagesContainer.$el.scrollHeight;
+      const clientHeight = this.$refs.messagesContainer.$el.clientHeight;
+      this.$refs.messagesContainer.$el.scroll({
+        top: scrollHeight - clientHeight,
+        behavior: "smooth",
+      });
     },
   },
 };
@@ -130,11 +141,11 @@ export default {
 
 <style scoped>
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE 和 Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari 和 Opera */
+  display: none;
 }
 </style>

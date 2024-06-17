@@ -27,6 +27,7 @@
       :actions="messageActions"
       :actionMenuStyle="messageActionMenuStyle"
       @select:action="onMessageAction"
+      @load:messages="onLoadMessages"
     />
     <!-- footer -->
     <chat-input-bar @send:message="onMessageSend" />
@@ -133,6 +134,9 @@ export default {
     },
     onMessageSend(text) {
       this.$emit("send:message", text);
+    },
+    onLoadMessages() {
+      this.$emit("load:messages");
     },
   },
 };
